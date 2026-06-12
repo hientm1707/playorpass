@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/en",
+      "destination": "/"
+    },
+    {
+      "source": "/vi",
+      "destination": "/"
+    }
+  ]
+}

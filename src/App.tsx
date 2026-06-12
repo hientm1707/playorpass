@@ -66,6 +66,23 @@ function isToday(value: string) {
   return value === toDateInputValue();
 }
 
+function languageFromPathname(pathname: string): Language | null {
+  const segment = pathname.split('/').filter(Boolean)[0];
+  if (segment === 'vi' || segment === 'en') return segment;
+  return null;
+}
+
+function getInitialLanguageFromPath() {
+  return languageFromPathname(window.location.pathname) ?? getLanguage();
+}
+
+function updateLanguagePath(language: Language) {
+  const current = languageFromPathname(window.location.pathname);
+  if (current === language) return;
+  const nextPath = `/${language}`;
+  window.history.pushState(null, '', `${nextPath}${window.location.search}${window.location.hash}`);
+}
+
 function verdictClass(verdict: Verdict) {
   if (verdict === 'Play') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
   if (verdict === 'Maybe') return 'bg-amber-100 text-amber-800 border-amber-200';
@@ -682,7 +699,7 @@ function Footer({ language }: { language: Language }) {
 }
 
 export function App() {
-  const [language, setLanguage] = useState<Language>(getLanguage);
+  const [language, setLanguage] = useState<Language>(getInitialLanguageFromPath);
   const [sport, setSport] = useState<Sport>(getInitialSport);
   const [selectedDate, setSelectedDate] = useState(toDateInputValue);
   const [preferences, setPreferences] = useState<Preferences>(getPreferences);
@@ -703,7 +720,19 @@ export function App() {
 
   useEffect(() => {
     saveLanguage(language);
+    updateLanguagePath(language);
+    document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    function handlePopState() {
+      const next = languageFromPathname(window.location.pathname);
+      if (next) setLanguage(next);
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     if (!selectedLocation) return;
