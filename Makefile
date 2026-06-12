@@ -76,7 +76,7 @@ push-ai:
 		git diff --cached --stat; \
 		printf "\nDiff:\n"; \
 		git diff --cached --; \
-	} | $(CODEX) -a never exec --sandbox read-only --output-last-message "$$tmp_msg" - >/dev/null; \
+	} | $(CODEX) -a never exec --sandbox read-only --output-last-message "$$tmp_msg" - >/dev/null 2>&1; \
 	msg=$$(tr '\n\r\t' '   ' < "$$tmp_msg" | sed 's/  */ /g; s/^ //; s/ $$//'); \
 	rm -f "$$tmp_msg"; \
 	if [ -z "$$msg" ]; then \
