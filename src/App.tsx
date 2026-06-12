@@ -1,4 +1,4 @@
-import { Activity, CalendarClock, Check, Clipboard, CloudSun, ExternalLink, Heart, Languages, LocateFixed, MapPin, Search, Settings2, Star, Trash2, WifiOff, X } from 'lucide-react';
+import { Activity, CalendarClock, Check, Clipboard, CloudRain, CloudSun, ExternalLink, Gauge, Heart, Languages, LocateFixed, MapPin, Search, Settings2, Star, Sun, ThermometerSun, Trash2, Trophy, WifiOff, Wind, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { fetchForecast, searchLocations } from './api';
 import { defaultPreferences, sports } from './config';
@@ -70,6 +70,53 @@ function verdictClass(verdict: Verdict) {
   if (verdict === 'Play') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
   if (verdict === 'Maybe') return 'bg-amber-100 text-amber-800 border-amber-200';
   return 'bg-rose-100 text-rose-800 border-rose-200';
+}
+
+function verdictGradient(verdict: Verdict) {
+  if (verdict === 'Play') return 'from-emerald-500 via-lime-400 to-sky-400';
+  if (verdict === 'Maybe') return 'from-amber-400 via-lime-300 to-sky-300';
+  return 'from-rose-500 via-amber-300 to-slate-300';
+}
+
+function scoreColor(score: number) {
+  if (score >= 75) return '#10b981';
+  if (score >= 55) return '#f59e0b';
+  return '#e11d48';
+}
+
+function ScoreDial({ score, label: dialLabel }: { score: number; label: string }) {
+  const clamped = Math.max(0, Math.min(score, 100));
+  return (
+    <div
+      className="grid h-24 w-24 shrink-0 place-items-center rounded-full p-2 shadow-[0_18px_38px_rgba(15,23,42,0.18)]"
+      style={{ background: `conic-gradient(${scoreColor(clamped)} ${clamped * 3.6}deg, rgba(226,232,240,0.95) 0deg)` }}
+      aria-label={`${dialLabel}: ${clamped}/100`}
+    >
+      <div className="grid h-full w-full place-items-center rounded-full bg-white text-center">
+        <span className="text-2xl font-black text-slate-950">{clamped}</span>
+        <span className="-mt-3 text-[10px] font-black uppercase tracking-wide text-slate-500">/100</span>
+      </div>
+    </div>
+  );
+}
+
+function MetricChip({ icon: Icon, label: chipLabel, value, tone = 'emerald' }: { icon: typeof CloudSun; label: string; value: string; tone?: 'emerald' | 'sky' | 'amber' | 'rose' }) {
+  const toneClass = {
+    emerald: 'border-emerald-100 bg-emerald-50 text-emerald-800',
+    sky: 'border-sky-100 bg-sky-50 text-sky-800',
+    amber: 'border-amber-100 bg-amber-50 text-amber-800',
+    rose: 'border-rose-100 bg-rose-50 text-rose-800'
+  }[tone];
+
+  return (
+    <div className={cx('flex items-center gap-2 rounded-lg border px-3 py-2', toneClass)}>
+      <Icon size={16} />
+      <span className="min-w-0">
+        <span className="block text-[10px] font-black uppercase tracking-wide opacity-75">{chipLabel}</span>
+        <span className="block truncate text-sm font-black">{value}</span>
+      </span>
+    </div>
+  );
 }
 
 function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'soft' | 'ghost' }) {
@@ -150,6 +197,52 @@ function EmptyState({ title, body, icon: Icon }: { title: string; body: string; 
         <p className="mt-1 text-sm text-slate-600">{body}</p>
       </div>
     </div>
+  );
+}
+
+function LoadingSkeleton({ language }: { language: Language }) {
+  return (
+    <section className={`${card} overflow-hidden p-5`}>
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 animate-pulse rounded-lg bg-emerald-100" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-black text-slate-700">{t(language, 'loading')}</p>
+          <div className="mt-2 h-3 w-2/3 animate-pulse rounded-full bg-slate-200" />
+        </div>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="h-20 animate-pulse rounded-lg bg-lime-100/70" />
+        <div className="h-20 animate-pulse rounded-lg bg-sky-100/70" />
+        <div className="h-20 animate-pulse rounded-lg bg-amber-100/70" />
+      </div>
+    </section>
+  );
+}
+
+function DecisionStrip({ language }: { language: Language }) {
+  const items: Array<{ verdict: Verdict; icon: typeof CloudSun; note: string }> = [
+    { verdict: 'Play', icon: Trophy, note: language === 'vi' ? 'Thời tiết thuận lợi' : 'Strong outdoor window' },
+    { verdict: 'Maybe', icon: Gauge, note: language === 'vi' ? 'Cần cân nhắc' : 'Watch a few factors' },
+    { verdict: 'Pass', icon: CloudRain, note: language === 'vi' ? 'Nên đổi kế hoạch' : 'Better to skip it' }
+  ];
+
+  return (
+    <section className="grid gap-3 sm:grid-cols-3">
+      {items.map(({ verdict, icon: Icon, note }) => (
+        <div key={verdict} className={`${card} overflow-hidden`}>
+          <div className={cx('h-1 bg-gradient-to-r', verdictGradient(verdict))} />
+          <div className="flex items-center gap-3 p-3">
+            <div className={cx('rounded-lg border p-2', verdictClass(verdict))}>
+              <Icon size={18} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-black text-slate-950">{verdictLabel(language, verdict)}</p>
+              <p className="truncate text-xs font-semibold text-slate-500">{note}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
 
@@ -273,17 +366,18 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
 
   const average = Math.round(hours.reduce((sum, hour) => sum + hour.score, 0) / Math.max(hours.length, 1));
   const verdict = bestWindow.verdict;
+  const bestHour = hours.find((hour) => hour.time === bestWindow.start) ?? hours[0];
 
   return (
     <section className={`${card} ${courtAccent} overflow-hidden`}>
-      <div className="border-b border-emerald-100 bg-gradient-to-br from-lime-100 via-white to-sky-50 p-5 pt-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
+      <div className={cx('border-b border-emerald-100 bg-gradient-to-br p-5 pt-6', verdictGradient(verdict))}>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <p className={label}>{t(language, 'verdict.kicker')}</p>
-            <h2 className="mt-2 text-5xl font-black uppercase text-slate-950 sm:text-6xl">{verdictLabel(language, verdict)}</h2>
-            <p className="mt-2 text-sm font-medium text-slate-600">{sportLabel(language, sport)} {t(language, 'verdict.at')} {formatPlace(location)} / {formatDate(language, new Date(bestWindow.start))}</p>
+            <h2 className="mt-2 text-5xl font-black uppercase text-slate-950 drop-shadow-sm sm:text-6xl">{verdictLabel(language, verdict)}</h2>
+            <p className="mt-2 max-w-2xl text-sm font-bold text-slate-700">{sportLabel(language, sport)} {t(language, 'verdict.at')} {formatPlace(location)} / {formatDate(language, new Date(bestWindow.start))}</p>
           </div>
-          <span className={cx('rounded-lg border px-3 py-1 text-sm font-black shadow-sm', verdictClass(verdict))}>{bestWindow.score}/100</span>
+          <ScoreDial score={bestWindow.score} label={t(language, 'share.score')} />
         </div>
         <div className="mt-5 grid grid-cols-2 gap-3">
           <div className="rounded-lg border border-emerald-100 bg-white p-3 shadow-sm">
@@ -300,6 +394,15 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
         {stale && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
             <WifiOff size={16} /> {t(language, 'verdict.offline')}
+          </div>
+        )}
+        {bestHour && (
+          <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            <MetricChip icon={CloudSun} label={language === 'vi' ? 'Trời' : 'Sky'} value={weatherLabelFor(language, weatherLabel(bestHour.weatherCode))} tone="sky" />
+            <MetricChip icon={ThermometerSun} label={language === 'vi' ? 'Cảm giác' : 'Feels'} value={`${Math.round(bestHour.apparentTemperature)}C`} tone="amber" />
+            <MetricChip icon={CloudRain} label={t(language, 'hourly.rain')} value={`${Math.round(bestHour.rainProbability)}%`} tone={bestHour.rainProbability > 35 ? 'rose' : 'emerald'} />
+            <MetricChip icon={Wind} label={t(language, 'hourly.wind')} value={`${Math.round(bestHour.windSpeed)} km/h`} tone={bestHour.windSpeed > 22 ? 'amber' : 'emerald'} />
+            <MetricChip icon={Sun} label="UV" value={String(Math.round(bestHour.uvIndex))} tone={bestHour.uvIndex > 7 ? 'rose' : 'emerald'} />
           </div>
         )}
         <div className="space-y-2">
@@ -660,9 +763,11 @@ export function App() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
-      <header className="rounded-lg border border-emerald-200 bg-white/90 p-4 shadow-soft">
+      <header className="overflow-hidden rounded-lg border border-emerald-200 bg-white/90 shadow-soft">
+        <div className="h-2 bg-gradient-to-r from-emerald-500 via-lime-300 to-sky-400" />
+        <div className="p-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
+          <div className="min-w-0">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-3 py-2 text-sm font-black uppercase tracking-wide text-lime-300">
                 <Activity size={16} />
@@ -670,7 +775,13 @@ export function App() {
               </span>
               <LanguageToggle language={language} onChange={setLanguage} />
             </div>
-            <h1 className="mt-1 text-4xl font-black uppercase text-slate-950 sm:text-5xl">{t(language, 'app.title')}</h1>
+            <div className="flex items-center gap-3">
+              <img className="h-16 w-16 rounded-lg border border-emerald-100 bg-emerald-50 object-cover shadow-sm" src="/app-icon.png" alt="" aria-hidden="true" />
+              <div className="min-w-0">
+                <h1 className="text-4xl font-black uppercase text-slate-950 sm:text-5xl">{t(language, 'app.title')}</h1>
+                <p className="mt-1 text-xs font-black uppercase tracking-wide text-emerald-700">{language === 'vi' ? 'Tín hiệu sân chơi theo thời tiết' : 'Weather-powered court signal'}</p>
+              </div>
+            </div>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-600">
               {t(language, 'app.subtitle')}
             </p>
@@ -699,7 +810,9 @@ export function App() {
             </div>
           </div>
         </div>
+        </div>
       </header>
+      <DecisionStrip language={language} />
       <QuickStart language={language} />
 
       <div className="grid gap-5 lg:grid-cols-[380px_minmax(0,1fr)]">
@@ -718,7 +831,7 @@ export function App() {
 
         <div className="space-y-5">
           {status === 'loading' && (
-            <div className={`${card} p-4 text-sm font-semibold text-slate-600`}>{t(language, 'loading')}</div>
+            <LoadingSkeleton language={language} />
           )}
           {status === 'error' && !usingCache && (
             <EmptyState icon={WifiOff} title={t(language, 'empty.api.title')} body={t(language, 'empty.api.body')} />
