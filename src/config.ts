@@ -34,7 +34,7 @@ export const defaultPreferences: Preferences = {
   preferredStartHour: 7,
   preferredEndHour: 20,
   windSensitivity: 1,
-  heatTolerance: 1,
+  heatTolerance: 34,
   uvTolerance: 1
 };
 

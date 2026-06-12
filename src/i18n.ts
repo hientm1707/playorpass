@@ -51,9 +51,7 @@ type TranslationKey =
   | 'prefs.body'
   | 'prefs.start'
   | 'prefs.end'
-  | 'prefs.wind'
   | 'prefs.heat'
-  | 'prefs.sun'
   | 'saved.kicker'
   | 'saved.title'
   | 'saved.body'
@@ -129,12 +127,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'hourly.wind': 'wind',
     'prefs.kicker': 'Your style',
     'prefs.title': 'Tune the vibe',
-    'prefs.body': 'Adjust this if you are picky about wind, heat, sun, or play times.',
+    'prefs.body': 'Adjust your play time and the temperature that feels too hot.',
     'prefs.start': 'Start after',
     'prefs.end': 'Wrap by',
-    'prefs.wind': 'Wind sensitivity',
-    'prefs.heat': 'Heat tolerance',
-    'prefs.sun': 'UV tolerance',
+    'prefs.heat': 'Too hot above',
     'saved.kicker': 'Saved spots',
     'saved.title': 'Your regular courts',
     'saved.body': 'Saved locations stay on this device.',
@@ -209,12 +205,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     'hourly.wind': 'gió',
     'prefs.kicker': 'Gu của bạn',
     'prefs.title': 'Chỉnh cho hợp ý',
-    'prefs.body': 'Điều chỉnh nếu bạn nhạy với gió, nóng, nắng hoặc giờ chơi.',
+    'prefs.body': 'Chỉnh giờ chơi và mức nhiệt bạn thấy quá nóng.',
     'prefs.start': 'Bắt đầu sau',
     'prefs.end': 'Kết thúc trước',
-    'prefs.wind': 'Độ nhạy với gió',
-    'prefs.heat': 'Mức chịu nhiệt',
-    'prefs.sun': 'Mức chịu UV',
+    'prefs.heat': 'Ngưỡng nóng',
     'saved.kicker': 'Địa điểm đã lưu',
     'saved.title': 'Sân quen của bạn',
     'saved.body': 'Địa điểm đã lưu chỉ nằm trên thiết bị này.',
@@ -285,10 +279,10 @@ export function reasonLabel(language: Language, reason: string) {
   if (wind) return `gió ${wind[1]} km/h`;
   const gusts = reason.match(/^(\d+) km\/h gusts$/);
   if (gusts) return `gió giật ${gusts[1]} km/h`;
-  const cool = reason.match(/^feels cool at (\d+)C$/);
-  if (cool) return `cảm giác hơi lạnh ${cool[1]}C`;
-  const hot = reason.match(/^feels hot at (\d+)C$/);
-  if (hot) return `cảm giác nóng ${hot[1]}C`;
+  const cool = reason.match(/^feels cool at (\d+)°C$/);
+  if (cool) return `cảm giác hơi lạnh ${cool[1]}°C`;
+  const hot = reason.match(/^feels hot at (\d+)°C$/);
+  if (hot) return `cảm giác nóng ${hot[1]}°C`;
   const uv = reason.match(/^UV (\d+) is punchy$/);
   if (uv) return `UV ${uv[1]} khá gắt`;
   const map: Record<string, string> = {

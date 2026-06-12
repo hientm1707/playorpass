@@ -416,7 +416,7 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
         {bestHour && (
           <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
             <MetricChip icon={CloudSun} label={language === 'vi' ? 'Trời' : 'Sky'} value={weatherLabelFor(language, weatherLabel(bestHour.weatherCode))} tone="sky" />
-            <MetricChip icon={ThermometerSun} label={language === 'vi' ? 'Cảm giác' : 'Feels'} value={`${Math.round(bestHour.apparentTemperature)}C`} tone="amber" />
+            <MetricChip icon={ThermometerSun} label={language === 'vi' ? 'Cảm giác' : 'Feels'} value={`${Math.round(bestHour.apparentTemperature)}°C`} tone="amber" />
             <MetricChip icon={CloudRain} label={t(language, 'hourly.rain')} value={`${Math.round(bestHour.rainProbability)}%`} tone={bestHour.rainProbability > 35 ? 'rose' : 'emerald'} />
             <MetricChip icon={Wind} label={t(language, 'hourly.wind')} value={`${Math.round(bestHour.windSpeed)} km/h`} tone={bestHour.windSpeed > 22 ? 'amber' : 'emerald'} />
             <MetricChip icon={Sun} label="UV" value={String(Math.round(bestHour.uvIndex))} tone={bestHour.uvIndex > 7 ? 'rose' : 'emerald'} />
@@ -483,7 +483,7 @@ function HourlyDetails({ language, hours }: { language: Language; hours: ScoredH
             </div>
             <p className="mt-1 text-sm text-slate-500">{weatherLabelFor(language, weatherLabel(hour.weatherCode))} / {hour.score}/100</p>
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              <span>{Math.round(hour.apparentTemperature)}C {t(language, 'hourly.feels')}</span>
+              <span>{Math.round(hour.apparentTemperature)}°C {t(language, 'hourly.feels')}</span>
               <span>{Math.round(hour.rainProbability)}% {t(language, 'hourly.rain')}</span>
               <span>{Math.round(hour.windSpeed)} km/h {t(language, 'hourly.wind')}</span>
               <span>UV {Math.round(hour.uvIndex)}</span>
@@ -496,6 +496,8 @@ function HourlyDetails({ language, hours }: { language: Language; hours: ScoredH
 }
 
 function PreferencesPanel({ language, preferences, onChange }: { language: Language; preferences: Preferences; onChange: (preferences: Preferences) => void }) {
+  const heatLimit = preferences.heatTolerance >= 20 ? preferences.heatTolerance : 34;
+
   function setValue(key: keyof Preferences, value: number) {
     const next = { ...preferences, [key]: value };
     onChange(next);
@@ -522,31 +524,13 @@ function PreferencesPanel({ language, preferences, onChange }: { language: Langu
       display: `${preferences.preferredEndHour}:00`
     },
     {
-      key: 'windSensitivity' as const,
-      label: t(language, 'prefs.wind'),
-      value: preferences.windSensitivity,
-      min: 0.6,
-      max: 1.6,
-      step: 0.1,
-      display: `${preferences.windSensitivity.toFixed(1)}x km/h`
-    },
-    {
       key: 'heatTolerance' as const,
       label: t(language, 'prefs.heat'),
-      value: preferences.heatTolerance,
-      min: 0.6,
-      max: 1.6,
-      step: 0.1,
-      display: `${preferences.heatTolerance.toFixed(1)}x C`
-    },
-    {
-      key: 'uvTolerance' as const,
-      label: t(language, 'prefs.sun'),
-      value: preferences.uvTolerance,
-      min: 0.6,
-      max: 1.6,
-      step: 0.1,
-      display: `${preferences.uvTolerance.toFixed(1)}x UV`
+      value: heatLimit,
+      min: 28,
+      max: 42,
+      step: 1,
+      display: `${heatLimit.toFixed(0)}°C`
     }
   ];
 

@@ -43,15 +43,15 @@ export function scoreHour(hour: HourlyForecast, sport: Sport, preferences: Prefe
     reasons.push(`${Math.round(hour.windGust)} km/h gusts`);
   }
 
-  const coolLimit = preset.minComfortTemp - (preferences.heatTolerance - 1) * 1.5;
-  const heatLimit = preset.maxComfortTemp + (preferences.heatTolerance - 1) * 2;
+  const coolLimit = preset.minComfortTemp;
+  const heatLimit = preferences.heatTolerance >= 20 ? preferences.heatTolerance : preset.maxComfortTemp;
   if (hour.apparentTemperature < coolLimit) {
     score -= (coolLimit - hour.apparentTemperature) * 3;
-    reasons.push(`feels cool at ${Math.round(hour.apparentTemperature)}C`);
+    reasons.push(`feels cool at ${Math.round(hour.apparentTemperature)}°C`);
   }
   if (hour.apparentTemperature > heatLimit) {
     score -= (hour.apparentTemperature - heatLimit) * 4;
-    reasons.push(`feels hot at ${Math.round(hour.apparentTemperature)}C`);
+    reasons.push(`feels hot at ${Math.round(hour.apparentTemperature)}°C`);
   }
 
   const uvLimit = preset.maxUvIndex + (preferences.uvTolerance - 1);
