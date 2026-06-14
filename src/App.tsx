@@ -27,9 +27,9 @@ type ForecastCache = {
   hours: HourlyForecast[];
 };
 
-const card = 'rounded-lg border border-slate-200/70 bg-white shadow-soft';
-const label = 'text-xs font-black uppercase tracking-wide text-emerald-700';
-const courtAccent = 'relative overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-lime-400 before:via-emerald-500 before:to-sky-400';
+const card = 'rounded-2xl border border-slate-900/10 bg-[#fffdf7]/95 shadow-card';
+const label = 'text-[11px] font-black uppercase tracking-[0.18em] text-orange-600';
+const courtAccent = 'relative overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-gradient-to-r before:from-orange-400 before:via-lime-400 before:to-sky-400';
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
@@ -84,15 +84,15 @@ function updateLanguagePath(language: Language) {
 }
 
 function verdictClass(verdict: Verdict) {
-  if (verdict === 'Play') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-  if (verdict === 'Maybe') return 'bg-amber-100 text-amber-800 border-amber-200';
-  return 'bg-rose-100 text-rose-800 border-rose-200';
+  if (verdict === 'Play') return 'border-emerald-200 bg-emerald-100 text-emerald-900';
+  if (verdict === 'Maybe') return 'border-orange-200 bg-orange-100 text-orange-900';
+  return 'border-rose-200 bg-rose-100 text-rose-900';
 }
 
 function verdictGradient(verdict: Verdict) {
-  if (verdict === 'Play') return 'from-emerald-500 via-lime-400 to-sky-400';
-  if (verdict === 'Maybe') return 'from-amber-400 via-lime-300 to-sky-300';
-  return 'from-rose-500 via-amber-300 to-slate-300';
+  if (verdict === 'Play') return 'from-emerald-500 via-lime-400 to-cyan-300';
+  if (verdict === 'Maybe') return 'from-orange-400 via-amber-300 to-lime-300';
+  return 'from-rose-500 via-orange-300 to-slate-300';
 }
 
 function scoreColor(score: number) {
@@ -105,11 +105,11 @@ function ScoreDial({ score, label: dialLabel }: { score: number; label: string }
   const clamped = Math.max(0, Math.min(score, 100));
   return (
     <div
-      className="grid h-24 w-24 shrink-0 place-items-center rounded-full p-2 shadow-[0_18px_38px_rgba(15,23,42,0.18)]"
+      className="grid h-24 w-24 shrink-0 place-items-center rounded-full p-2 shadow-[0_18px_38px_rgba(15,23,42,0.22)] ring-4 ring-white/60"
       style={{ background: `conic-gradient(${scoreColor(clamped)} ${clamped * 3.6}deg, rgba(226,232,240,0.95) 0deg)` }}
       aria-label={`${dialLabel}: ${clamped}/100`}
     >
-      <div className="grid h-full w-full place-items-center rounded-full bg-white text-center">
+      <div className="grid h-full w-full place-items-center rounded-full bg-[#fffdf7] text-center">
         <span className="text-2xl font-black text-slate-950">{clamped}</span>
         <span className="-mt-3 text-[10px] font-black uppercase tracking-wide text-slate-500">/100</span>
       </div>
@@ -141,10 +141,10 @@ function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant
   return (
     <button
       className={cx(
-        'focus-ring inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
-        variant === 'primary' && 'bg-emerald-600 text-white hover:bg-emerald-700',
-        variant === 'soft' && 'border border-slate-200 bg-white text-slate-800 hover:border-emerald-200 hover:bg-emerald-50',
-        variant === 'ghost' && 'text-slate-600 hover:bg-lime-50',
+        'focus-ring inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-black transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+        variant === 'primary' && 'bg-slate-950 text-lime-200 shadow-button hover:bg-slate-800',
+        variant === 'soft' && 'border border-slate-900/10 bg-white text-slate-800 shadow-sm hover:border-orange-200 hover:bg-orange-50',
+        variant === 'ghost' && 'text-slate-600 hover:bg-orange-50',
         className
       )}
       {...rest}
@@ -157,12 +157,12 @@ function LanguageToggle({ language, onChange }: { language: Language; onChange: 
 
   return (
     <button
-      className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
+      className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-full border border-slate-900/10 bg-white px-4 py-2 text-sm font-black text-slate-700 shadow-sm transition hover:border-orange-200 hover:bg-orange-50"
       onClick={() => onChange(nextLanguage)}
       aria-label={t(language, 'language.label')}
       title={`${t(language, 'language.label')}: ${language === 'en' ? t(language, 'language.english') : t(language, 'language.vietnamese')}`}
     >
-      <Languages size={16} className="text-emerald-600" />
+      <Languages size={16} className="text-orange-500" />
       {language.toUpperCase()}
     </button>
   );
@@ -173,21 +173,21 @@ function DateBadge({ language, selectedDate, onChange }: { language: Language; s
   const maxDate = toDateInputValue(addDays(new Date(), 15));
 
   return (
-    <div className="rounded-lg border border-emerald-200 bg-white p-2 shadow-soft">
+    <div className="rounded-2xl border border-orange-300 bg-slate-950 p-2 text-white shadow-card">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-white">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-300 text-slate-950">
           <CalendarClock size={20} />
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-wide text-emerald-700">{isToday(selectedDate) ? t(language, 'date.label') : t(language, 'date.selected')}</p>
-          <p className="text-base font-black text-slate-950">{formatDate(language, dateInputToDate(selectedDate))}</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-orange-300">{isToday(selectedDate) ? t(language, 'date.label') : t(language, 'date.selected')}</p>
+          <p className="text-base font-black text-white">{formatDate(language, dateInputToDate(selectedDate))}</p>
         </div>
       </div>
       <div className="mt-2 grid grid-cols-[1fr_auto] gap-2">
         <label className="sr-only" htmlFor="play-date">{t(language, 'date.pick')}</label>
         <input
           id="play-date"
-          className="focus-ring min-h-10 rounded-lg border border-slate-200 bg-lime-50 px-3 text-sm font-black text-slate-950 accent-emerald-600"
+          className="focus-ring min-h-10 rounded-xl border border-white/10 bg-white px-3 text-sm font-black text-slate-950 accent-orange-500"
           type="date"
           min={today}
           max={maxDate}
@@ -206,7 +206,7 @@ function DateBadge({ language, selectedDate, onChange }: { language: Language; s
 function EmptyState({ title, body, icon: Icon }: { title: string; body: string; icon: typeof CloudSun }) {
   return (
     <div className={`${card} flex items-start gap-3 p-4`}>
-      <div className="rounded-lg bg-lime-100 p-2 text-emerald-700">
+      <div className="rounded-xl bg-orange-100 p-2 text-orange-700">
         <Icon size={20} />
       </div>
       <div>
@@ -221,16 +221,16 @@ function LoadingSkeleton({ language }: { language: Language }) {
   return (
     <section className={`${card} overflow-hidden p-5`}>
       <div className="flex items-center gap-3">
-        <div className="h-12 w-12 animate-pulse rounded-lg bg-emerald-100" />
+        <div className="h-12 w-12 animate-pulse rounded-2xl bg-orange-100" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-black text-slate-700">{t(language, 'loading')}</p>
           <div className="mt-2 h-3 w-2/3 animate-pulse rounded-full bg-slate-200" />
         </div>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="h-20 animate-pulse rounded-lg bg-lime-100/70" />
-        <div className="h-20 animate-pulse rounded-lg bg-sky-100/70" />
-        <div className="h-20 animate-pulse rounded-lg bg-amber-100/70" />
+        <div className="h-20 animate-pulse rounded-2xl bg-lime-100/70" />
+        <div className="h-20 animate-pulse rounded-2xl bg-sky-100/70" />
+        <div className="h-20 animate-pulse rounded-2xl bg-orange-100/70" />
       </div>
     </section>
   );
@@ -249,7 +249,7 @@ function DecisionStrip({ language }: { language: Language }) {
         <div key={verdict} className={`${card} overflow-hidden`}>
           <div className={cx('h-1 bg-gradient-to-r', verdictGradient(verdict))} />
           <div className="flex items-center gap-3 p-3">
-            <div className={cx('rounded-lg border p-2', verdictClass(verdict))}>
+            <div className={cx('rounded-xl border p-2', verdictClass(verdict))}>
               <Icon size={18} />
             </div>
             <div className="min-w-0">
@@ -271,7 +271,7 @@ function QuickStart({ language }: { language: Language }) {
   ];
 
   return (
-    <section className={`${card} ${courtAccent} grid gap-3 p-4 md:grid-cols-[1.1fr_1.4fr] md:items-center`}>
+    <section className={`${card} ${courtAccent} grid gap-4 p-4 md:grid-cols-[1.1fr_1.4fr] md:items-center`}>
       <div>
         <p className={label}>{t(language, 'quick.kicker')}</p>
         <h2 className="mt-1 text-xl font-black text-slate-950">{t(language, 'quick.title')}</h2>
@@ -281,8 +281,8 @@ function QuickStart({ language }: { language: Language }) {
       </div>
       <div className="grid gap-2 sm:grid-cols-3">
         {steps.map(([number, title, body]) => (
-          <div key={number} className="rounded-lg border border-emerald-100 bg-lime-50/70 p-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65)]">
-            <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-950 text-sm font-black text-lime-300">{number}</div>
+          <div key={number} className="rounded-2xl border border-slate-900/10 bg-white p-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65)]">
+            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950 text-sm font-black text-lime-300">{number}</div>
             <p className="font-black text-slate-950">{title}</p>
             <p className="mt-1 text-xs leading-5 text-slate-600">{body}</p>
           </div>
@@ -317,11 +317,11 @@ function LocationSearch({ language, onSave }: { language: Language; onSave: (loc
           <h2 className="text-lg font-black text-slate-950">{t(language, 'location.title')}</h2>
           <p className="mt-1 text-sm text-slate-600">{t(language, 'location.body')}</p>
         </div>
-        <MapPin className="text-emerald-600" size={22} />
+        <MapPin className="text-orange-500" size={22} />
       </div>
       <form className="mt-4 flex gap-2" onSubmit={handleSearch}>
         <input
-          className="focus-ring min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+          className="focus-ring min-w-0 flex-1 rounded-full border border-slate-900/10 bg-white px-4 py-2 text-sm"
           placeholder={t(language, 'location.placeholder')}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -337,7 +337,7 @@ function LocationSearch({ language, onSave }: { language: Language; onSave: (loc
           {results.map((result) => (
             <button
               key={result.id}
-              className="focus-ring flex w-full items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-left hover:bg-emerald-50"
+              className="focus-ring flex w-full items-center justify-between rounded-2xl border border-slate-900/10 bg-white px-3 py-2 text-left hover:bg-orange-50"
               onClick={() =>
                 onSave({
                   id: String(result.id),
@@ -354,7 +354,7 @@ function LocationSearch({ language, onSave }: { language: Language; onSave: (loc
                 <span className="block text-sm font-semibold text-slate-900">{formatPlace(result)}</span>
                 <span className="text-xs text-slate-500">{result.latitude.toFixed(2)}, {result.longitude.toFixed(2)}</span>
               </span>
-              <Check size={16} className="text-emerald-600" />
+              <Check size={16} className="text-orange-500" />
             </button>
           ))}
         </div>
@@ -387,7 +387,7 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
 
   return (
     <section className={`${card} ${courtAccent} overflow-hidden`}>
-      <div className={cx('border-b border-emerald-100 bg-gradient-to-br p-5 pt-6', verdictGradient(verdict))}>
+      <div className={cx('border-b border-slate-900/10 bg-gradient-to-br p-5 pt-6', verdictGradient(verdict))}>
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <p className={label}>{t(language, 'verdict.kicker')}</p>
@@ -397,11 +397,11 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
           <ScoreDial score={bestWindow.score} label={t(language, 'share.score')} />
         </div>
         <div className="mt-5 grid grid-cols-2 gap-3">
-          <div className="rounded-lg border border-emerald-100 bg-white p-3 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">{t(language, 'verdict.bestWindow')}</p>
+          <div className="rounded-2xl border border-slate-900/10 bg-[#fffdf7] p-3 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-wide text-orange-700">{t(language, 'verdict.bestWindow')}</p>
             <p className="mt-1 text-lg font-black text-slate-950">{formatHour(bestWindow.start, language)} - {formatHour(bestWindow.end, language)}</p>
           </div>
-          <div className="rounded-lg border border-sky-100 bg-white p-3 shadow-sm">
+          <div className="rounded-2xl border border-slate-900/10 bg-[#fffdf7] p-3 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wide text-sky-700">{t(language, 'verdict.weatherDrag')}</p>
             <p className="mt-1 text-lg font-black text-slate-950">{100 - average}%</p>
           </div>
@@ -409,7 +409,7 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
       </div>
       <div className="p-5">
         {stale && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <div className="mb-4 flex items-center gap-2 rounded-2xl border border-orange-200 bg-orange-50 px-3 py-2 text-sm text-orange-800">
             <WifiOff size={16} /> {t(language, 'verdict.offline')}
           </div>
         )}
@@ -425,7 +425,7 @@ function VerdictPanel({ language, sport, location, bestWindow, hours, copied, on
         <div className="space-y-2">
           <p className={label}>{t(language, 'verdict.why')}</p>
           {bestWindow.reasons.map((reason) => (
-            <p key={reason} className="rounded-lg bg-lime-50 px-3 py-2 text-sm font-medium text-slate-700">{reasonLabel(language, reason)}</p>
+            <p key={reason} className="rounded-2xl bg-white px-3 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-900/10">{reasonLabel(language, reason)}</p>
           ))}
         </div>
         <Button className="mt-4 w-full" variant="primary" onClick={onCopy}>
@@ -446,11 +446,11 @@ function WindowsList({ language, windows }: { language: Language; windows: TimeW
           <h2 className="text-lg font-black text-slate-950">{t(language, 'windows.title')}</h2>
           <p className="mt-1 text-sm text-slate-600">{t(language, 'windows.body')}</p>
         </div>
-        <CalendarClock className="text-emerald-600" size={22} />
+        <CalendarClock className="text-orange-500" size={22} />
       </div>
       <div className="space-y-2">
         {windows.slice(0, 3).map((window) => (
-          <div key={`${window.start}-${window.end}`} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 hover:border-emerald-200 hover:bg-lime-50/50">
+          <div key={`${window.start}-${window.end}`} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-900/10 bg-white p-3 hover:border-orange-200 hover:bg-orange-50/50">
             <div>
               <p className="font-semibold text-slate-950">{formatHour(window.start, language)} - {formatHour(window.end, language)}</p>
               <p className="text-sm text-slate-500">{window.reasons.map((reason) => reasonLabel(language, reason)).join(' / ')}</p>
@@ -463,32 +463,104 @@ function WindowsList({ language, windows }: { language: Language; windows: TimeW
   );
 }
 
+function verdictSurfaceClass(verdict: Verdict) {
+  if (verdict === 'Play') return 'border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-sky-50/70 hover:border-emerald-300';
+  if (verdict === 'Maybe') return 'border-orange-200 bg-gradient-to-br from-orange-50/90 via-white to-lime-50/70 hover:border-orange-300';
+  return 'border-rose-200 bg-gradient-to-br from-rose-50/90 via-white to-slate-50 hover:border-rose-300';
+}
+
+function HourMetric({ icon: Icon, label: metricLabel, value, tone }: { icon: typeof CloudSun; label: string; value: string; tone: 'emerald' | 'sky' | 'amber' | 'rose' | 'slate' }) {
+  const toneClass = {
+    emerald: 'bg-emerald-50 text-emerald-800 ring-emerald-100',
+    sky: 'bg-sky-50 text-sky-800 ring-sky-100',
+    amber: 'bg-orange-50 text-orange-800 ring-orange-100',
+    rose: 'bg-rose-50 text-rose-800 ring-rose-100',
+    slate: 'bg-slate-50 text-slate-700 ring-slate-100'
+  }[tone];
+
+  return (
+    <div className={cx('grid min-h-[58px] grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2.5 py-2 text-sm ring-1', toneClass)}>
+      <Icon size={16} className="shrink-0" />
+      <span className="min-w-0">
+        <span className="block truncate text-[10px] font-black uppercase tracking-wide opacity-70">{metricLabel}</span>
+        <span className="block truncate font-black">{value}</span>
+      </span>
+    </div>
+  );
+}
+
 function HourlyDetails({ language, hours }: { language: Language; hours: ScoredHour[] }) {
   return (
-    <section className={`${card} p-4`}>
-      <div className="mb-3 flex items-center justify-between">
+    <section className={`${card} ${courtAccent} p-4 pt-5`}>
+      <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className={label}>{t(language, 'hourly.kicker')}</p>
           <h2 className="text-lg font-black text-slate-950">{t(language, 'hourly.title')}</h2>
           <p className="mt-1 text-sm text-slate-600">{t(language, 'hourly.body')}</p>
         </div>
-        <Activity className="text-emerald-600" size={22} />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-950 text-lime-300 shadow-sm">
+          <Activity size={20} />
+        </div>
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {hours.map((hour) => (
-          <div key={hour.time} className="rounded-lg border border-slate-200 bg-white p-3 hover:border-sky-200">
-            <div className="flex items-center justify-between">
-              <p className="font-bold text-slate-950">{formatHour(hour.time, language)}</p>
-              <span className={cx('rounded-lg border px-2 py-1 text-xs font-bold', verdictClass(hour.verdict))}>{verdictLabel(language, hour.verdict)}</span>
+          <article key={hour.time} className={cx('overflow-hidden rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-card', verdictSurfaceClass(hour.verdict))}>
+            <div className={cx('h-1 bg-gradient-to-r', verdictGradient(hour.verdict))} />
+            <div className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-2xl font-black text-slate-950">{formatHour(hour.time, language)}</p>
+                  <p className="mt-1 truncate text-sm font-semibold text-slate-500">{weatherLabelFor(language, weatherLabel(hour.weatherCode))}</p>
+                </div>
+                <span className={cx('shrink-0 rounded-full border px-3 py-1.5 text-sm font-black', verdictClass(hour.verdict))}>{verdictLabel(language, hour.verdict)}</span>
+              </div>
+
+              <div className="mt-4">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="text-xs font-black uppercase tracking-wide text-slate-500">{t(language, 'share.score')}</span>
+                  <span className="text-sm font-black text-slate-950">{hour.score}/100</span>
+                </div>
+                <div className="h-2.5 overflow-hidden rounded-full bg-slate-200/80">
+                  <div
+                    className="h-full rounded-full transition-[width]"
+                    style={{ width: `${hour.score}%`, backgroundColor: scoreColor(hour.score) }}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <HourMetric
+                  icon={ThermometerSun}
+                  label={language === 'vi' ? 'Cảm giác' : 'Feels'}
+                  value={`${Math.round(hour.apparentTemperature)}°C`}
+                  tone={hour.apparentTemperature >= 37 ? 'rose' : hour.apparentTemperature >= 34 ? 'amber' : 'emerald'}
+                />
+                <HourMetric
+                  icon={CloudRain}
+                  label={t(language, 'hourly.rain')}
+                  value={`${Math.round(hour.rainProbability)}%`}
+                  tone={hour.rainProbability >= 50 ? 'rose' : hour.rainProbability >= 25 ? 'amber' : 'sky'}
+                />
+                <HourMetric
+                  icon={Wind}
+                  label={t(language, 'hourly.wind')}
+                  value={`${Math.round(hour.windSpeed)} km/h`}
+                  tone={hour.windSpeed >= 18 ? 'amber' : 'emerald'}
+                />
+                <HourMetric
+                  icon={Sun}
+                  label="UV"
+                  value={String(Math.round(hour.uvIndex))}
+                  tone={hour.uvIndex >= 8 ? 'rose' : hour.uvIndex >= 5 ? 'amber' : 'slate'}
+                />
+              </div>
+
+              <div className="mt-4 flex items-start gap-2 rounded-lg bg-white/75 px-3 py-2 text-sm font-semibold text-slate-600 ring-1 ring-white/80">
+                <Gauge size={16} className="mt-0.5 shrink-0 text-slate-400" />
+                <p className="min-w-0 leading-5">{hour.reasons.map((reason) => reasonLabel(language, reason)).join(' / ')}</p>
+              </div>
             </div>
-            <p className="mt-1 text-sm text-slate-500">{weatherLabelFor(language, weatherLabel(hour.weatherCode))} / {hour.score}/100</p>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              <span>{Math.round(hour.apparentTemperature)}°C {t(language, 'hourly.feels')}</span>
-              <span>{Math.round(hour.rainProbability)}% {t(language, 'hourly.rain')}</span>
-              <span>{Math.round(hour.windSpeed)} km/h {t(language, 'hourly.wind')}</span>
-              <span>UV {Math.round(hour.uvIndex)}</span>
-            </div>
-          </div>
+          </article>
         ))}
       </div>
     </section>
@@ -542,19 +614,19 @@ function PreferencesPanel({ language, preferences, onChange }: { language: Langu
           <h2 className="text-lg font-black text-slate-950">{t(language, 'prefs.title')}</h2>
           <p className="mt-1 text-sm leading-5 text-slate-600">{t(language, 'prefs.body')}</p>
         </div>
-        <div className="rounded-lg bg-slate-950 p-2 text-lime-300">
+        <div className="rounded-full bg-slate-950 p-2 text-lime-300">
           <Settings2 size={18} />
         </div>
       </div>
-      <div className="space-y-3">
+      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
         {criteria.map((item) => (
-          <label key={item.key} className="block rounded-lg border border-emerald-100 bg-lime-50/60 p-3">
+          <label key={item.key} className="block rounded-2xl border border-slate-900/10 bg-white p-3 shadow-sm">
             <span className="mb-2 flex items-center justify-between gap-3">
               <span className="text-sm font-black text-slate-900">{item.label}</span>
-              <span className="rounded-lg bg-white px-2 py-1 text-xs font-black text-emerald-700 shadow-sm">{item.display}</span>
+              <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-lime-300 shadow-sm">{item.display}</span>
             </span>
             <input
-              className="h-2 w-full cursor-pointer accent-emerald-600"
+              className="court-range h-2 w-full cursor-pointer accent-orange-500"
               type="range"
               min={item.min}
               max={item.max}
@@ -585,14 +657,14 @@ function SavedLocations({ language, locations, selectedId, onSelect, onDefault, 
           <h2 className="text-lg font-black text-slate-950">{t(language, 'saved.title')}</h2>
           <p className="mt-1 text-sm text-slate-600">{t(language, 'saved.body')}</p>
         </div>
-        <Star className="text-emerald-600" size={22} />
+        <Star className="text-orange-500" size={22} />
       </div>
       {locations.length === 0 ? (
         <p className="text-sm text-slate-600">{t(language, 'saved.empty')}</p>
       ) : (
         <div className="space-y-2">
           {locations.map((location) => (
-            <div key={location.id} className={cx('rounded-lg border p-3', selectedId === location.id ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-white')}>
+            <div key={location.id} className={cx('rounded-2xl border p-3', selectedId === location.id ? 'border-orange-300 bg-orange-50' : 'border-slate-900/10 bg-white')}>
               <button className="focus-ring w-full text-left" onClick={() => onSelect(location)}>
                 <span className="block font-semibold text-slate-950">{formatPlace(location)}</span>
                 <span className="text-xs text-slate-500">{location.latitude.toFixed(2)}, {location.longitude.toFixed(2)}</span>
@@ -617,11 +689,11 @@ function Footer({ language }: { language: Language }) {
   const [showDonation, setShowDonation] = useState(false);
 
   return (
-    <footer className="mt-4 border-t border-slate-200/80 py-6">
-      <div className="flex flex-col gap-4 rounded-lg bg-white/70 p-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="mt-4 border-t border-slate-900/10 py-6">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-900/10 bg-[#fffdf7]/90 p-4 text-sm text-slate-600 shadow-card sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <img
-            className="h-14 w-14 rounded-full border-2 border-lime-300 bg-lime-50 object-cover shadow-sm"
+            className="h-14 w-14 rounded-2xl border-2 border-orange-300 bg-orange-50 object-cover shadow-sm"
             src="/chibi-hien.png"
             alt="Chibi illustration of Hien Tran"
           />
@@ -630,7 +702,7 @@ function Footer({ language }: { language: Language }) {
             <p>
               {language === 'vi' ? 'Xây dựng bởi ' : 'Built by '}
               <a
-                className="focus-ring rounded-md px-1 font-black text-emerald-700 underline decoration-lime-300 decoration-2 underline-offset-4 hover:bg-lime-50"
+                className="focus-ring rounded-md px-1 font-black text-orange-700 underline decoration-lime-300 decoration-2 underline-offset-4 hover:bg-orange-50"
                 href="https://www.facebook.com/cse.minhhientran"
                 target="_blank"
                 rel="noreferrer"
@@ -642,7 +714,7 @@ function Footer({ language }: { language: Language }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <a className="focus-ring inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 hover:bg-lime-50" href="https://moveslikehayden.lovable.app/about" target="_blank" rel="noreferrer">
+          <a className="focus-ring inline-flex items-center gap-2 rounded-full border border-slate-900/10 bg-white px-4 py-2 font-black text-slate-700 shadow-sm hover:bg-orange-50" href="https://moveslikehayden.lovable.app/about" target="_blank" rel="noreferrer">
             {t(language, 'footer.blog')} <ExternalLink size={15} />
           </a>
           <Button className="border-rose-100 bg-rose-50 text-rose-700 hover:bg-rose-100" onClick={() => setShowDonation(true)}>
@@ -659,7 +731,7 @@ function Footer({ language }: { language: Language }) {
           aria-labelledby="donation-modal-title"
           onClick={() => setShowDonation(false)}
         >
-          <div className="w-full max-w-md rounded-lg bg-white p-4 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+          <div className="w-full max-w-md rounded-2xl bg-[#fffdf7] p-4 shadow-2xl" onClick={(event) => event.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className={label}>{t(language, 'donation.kicker')}</p>
@@ -670,7 +742,7 @@ function Footer({ language }: { language: Language }) {
               </Button>
             </div>
             <img
-              className="w-full rounded-lg border border-rose-100 bg-rose-50 object-contain"
+              className="w-full rounded-2xl border border-rose-100 bg-rose-50 object-contain"
               src="/donation-qr.png"
               alt={t(language, 'donation.alt')}
             />
@@ -776,40 +848,42 @@ export function App() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
-      <header className="overflow-hidden rounded-lg border border-emerald-200 bg-white/90 shadow-soft">
-        <div className="h-2 bg-gradient-to-r from-emerald-500 via-lime-300 to-sky-400" />
-        <div className="p-4">
+      <header className="overflow-hidden rounded-[1.75rem] border border-slate-900 bg-slate-950 shadow-card">
+        <div className="h-2 bg-gradient-to-r from-orange-400 via-lime-300 to-cyan-300" />
+        <div className="relative p-4">
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(132,204,22,0.24),transparent_42%)]" />
+        <div className="relative">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-3 py-2 text-sm font-black uppercase tracking-wide text-lime-300">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-black uppercase tracking-wide text-lime-300 ring-1 ring-white/10">
                 <Activity size={16} />
                 {t(language, 'app.kicker')}
               </span>
               <LanguageToggle language={language} onChange={setLanguage} />
             </div>
             <div className="flex items-center gap-3">
-              <img className="h-16 w-16 rounded-lg border border-emerald-100 bg-emerald-50 object-cover shadow-sm" src="/app-icon.png" alt="" aria-hidden="true" />
+              <img className="h-16 w-16 rounded-2xl border border-white/15 bg-white object-cover shadow-sm" src="/app-icon.png" alt="" aria-hidden="true" />
               <div className="min-w-0">
-                <h1 className="text-4xl font-black uppercase text-slate-950 sm:text-5xl">{t(language, 'app.title')}</h1>
-                <p className="mt-1 text-xs font-black uppercase tracking-wide text-emerald-700">{language === 'vi' ? 'Tín hiệu sân chơi theo thời tiết' : 'Weather-powered court signal'}</p>
+                <h1 className="text-4xl font-black uppercase text-white sm:text-5xl">{t(language, 'app.title')}</h1>
+                <p className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-orange-300">{language === 'vi' ? 'Tín hiệu sân chơi theo thời tiết' : 'Weather-powered court signal'}</p>
               </div>
             </div>
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-600">
+            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-300">
               {t(language, 'app.subtitle')}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <DateBadge language={language} selectedDate={selectedDate} onChange={setSelectedDate} />
-            <div className="rounded-lg border border-slate-200 bg-slate-950 p-2 shadow-sm">
+            <div className="rounded-2xl border border-white/10 bg-white/10 p-2 shadow-sm backdrop-blur">
               <p className="mb-2 px-1 text-xs font-black uppercase tracking-wide text-lime-300">{t(language, 'app.stepSport')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {sports.map((item) => (
                   <button
                     key={item}
                     className={cx(
-                      'focus-ring rounded-lg px-3 py-2 text-sm font-black transition',
+                      'focus-ring rounded-full px-3 py-2 text-sm font-black transition',
                       sport === item
                         ? 'bg-lime-300 text-slate-950 shadow-sm'
                         : 'bg-white/10 text-white hover:bg-white/15'
@@ -822,6 +896,7 @@ export function App() {
               </div>
             </div>
           </div>
+        </div>
         </div>
         </div>
       </header>
